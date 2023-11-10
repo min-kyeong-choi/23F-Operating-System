@@ -81,12 +81,12 @@ void exitFunction(char exitMessage[])
 
     if (parsedExitMessage2ToInt == 0)
     {
-        printf("Exit code must me a number. You entered: %s\n", parsedExitMessage2);
+        fprintf(stderr, "Exit code must be a number. You entered: %s\n", parsedExitMessage2);
         judging();
     }
     if (parsedExitMessage2ToInt < 0 || parsedExitMessage2ToInt > 255)
     {
-        printf("Exit code must be a number from 0 to 255! You entered: %d\n2", parsedExitMessage2ToInt);
+        fprintf(stderr, "Exit code must be a number from 0 to 255! You entered: %d\n", parsedExitMessage2ToInt);
         judging();
     }
 
@@ -139,7 +139,7 @@ void cdFunction(char cdMessage[])
 
     if (cdResult == -1)
     {
-        printf("cd failed: No such file or directory\n");
+        fprintf(stderr, "cd failed: No such file or directory\n");
         judging();
     }
     judging();
@@ -147,6 +147,6 @@ void cdFunction(char cdMessage[])
 
 void errorFunction(char command[])
 {
-    printf("Command, %s, not recognized!\n", command);
+    fprintf(stderr, "Command, %s, not recognized!\n", command);
     judging();
 }
