@@ -1,0 +1,152 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+void welcomeMessage();
+void judging();
+void exitFunction(char exitMessage[]);
+void helpFunction();
+void pwdFunction();
+void cdFunction(char cdMessage[]);
+void errorFunction(char command[]);
+
+int main()
+{
+    welcomeMessage();
+    judging();
+    return 0;
+}
+
+void welcomeMessage()
+{
+    printf("******************************************\n");
+    printf("*                                        *\n");
+    printf("*      ****Welcome to my shell!****      *\n");
+    printf("*                                        *\n");
+    printf("******************************************\n");
+}
+
+void judging()
+{
+    char buff[1024];
+    getcwd(buff, 1024);
+    printf("%s$ ", buff);
+
+    while (1)
+    {
+        char input[100];
+        fgets(input, 100, stdin);
+        input[strlen(input) - 1] = '\0';
+
+        if (strstr(input, "exit") != NULL)
+        {
+            exitFunction(input);
+        }
+        if (strcmp(input, "help") == 0)
+        {
+            helpFunction();
+        }
+        if (strcmp(input, "pwd") == 0)
+        {
+            pwdFunction();
+        }
+        if (strstr(input, "cd") != NULL)
+        {
+            cdFunction(input);
+        }
+        errorFunction(input);
+    }
+}
+
+void exitFunction(char exitMessage[])
+{
+    char exitMessageCopy[100];
+    if (strcmp(exitMessage, "exit") == 0)
+    {
+        printf("Goodbye!\n");
+        exit(0);
+    }
+    if (strncmp(exitMessage, "exit 0", 6) == 0)
+    {
+        printf("Goodbye!\n");
+        exit(0);
+    }
+
+    strcpy(exitMessageCopy, exitMessage);
+    char *parsedExitMessage1 = strtok(exitMessageCopy, " ");
+    char *parsedExitMessage2 = strtok(NULL, " ");
+
+    int parsedExitMessage2ToInt = strtol(parsedExitMessage2, NULL, 10);
+
+    if (parsedExitMessage2ToInt == 0)
+    {
+        printf("Exit code must me a number. You entered: %s\n", parsedExitMessage2);
+        judging();
+    }
+    if (parsedExitMessage2ToInt < 0 || parsedExitMessage2ToInt > 255)
+    {
+        printf("Exit code must be a number from 0 to 255! You entered: %d\n2", parsedExitMessage2ToInt);
+        judging();
+    }
+
+    for (int i = 0; i < 256; i++)
+    {
+        if ((strcmp(parsedExitMessage1, "exit") == 0) && (parsedExitMessage2ToInt == i))
+        {
+            printf("Goodbye!\n");
+            exit(i);
+        }
+    }
+}
+
+void helpFunction()
+{
+    printf("\n*** SHELL FEATURES ***");
+    printf("\nList of Built-Ins:");
+    printf("\n> exit <optional exit code>");
+    printf("\n> cd <directory>");
+    printf("\n> pwd");
+    printf("\n> help");
+    printf("\n\nYou can press Ctrl-C to terminate this shell.\n");
+    judging();
+}
+
+void pwdFunction()
+{
+    char buff[1024];
+    getcwd(buff, 1024);
+    printf("%s\n", buff);
+    judging();
+}
+
+void cdFunction(char cdMessage[])
+{
+    char cdMessageCopy[100];
+    int cdResult = 0;
+    strcpy(cdMessageCopy, cdMessage);
+
+    char *parsedCdMessage1 = strtok(cdMessageCopy, " ");
+    char *parsedCdMessage2 = strtok(NULL, " ");
+
+    if (parsedCdMessage2 == NULL)
+    {
+        chdir("/home/ubuntu");
+        judging();
+    }
+
+    cdResult = chdir(parsedCdMessage2);
+
+    if (cdResult == -1)
+    {
+        printf("cd failed: No such file or directory\n");
+        judging();
+    }
+    judging();
+}
+
+void errorFunction(char command[])
+{
+    printf("Command, %s, not recognized!\n", command);
+    judging();
+}
